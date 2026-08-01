@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.vscode/
+.DS_Store
+npm-debug.log*
+yarn-error.log*
+frontend/node_modules/
+frontend/dist/
+.DS_Store
+Thumbs.db
