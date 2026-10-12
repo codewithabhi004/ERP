@@ -1,6 +1,8 @@
 # Public demo sign-in accounts
 
-Target public preview URL (available after GitHub Pages is configured and deployed): https://codewithabhi004.github.io/ERP/
+Public frontend preview: https://codewithabhi004.github.io/ERP/
+
+The website is live, but account sign-in is not active until the API and demo databases are provisioned and seeded using the steps in [README.md](./README.md).
 
 These accounts are for the fictional Evergreen Public School demo only. Every account uses the shared password below. The public demo API is configured as read-only; it contains synthetic records, not real student or school information.
 

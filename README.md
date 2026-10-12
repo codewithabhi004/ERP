@@ -134,6 +134,8 @@ The frontend is a static site and can be published at **`https://codewithabhi004
 
 Use this only for a public, synthetic-data demo. Free hosting may sleep, have resource limits, or change its free-tier terms; it is not an availability or backup guarantee for a live school ERP.
 
+The GitHub Pages site publishes the frontend only. Until the Render API and hosted databases are configured and seeded, public sign-in cannot authenticate; the demo usernames/password are not yet active against a live backend.
+
 1. **Create databases.** Create a PostgreSQL database/project in Neon and a MongoDB Atlas cluster. Use Neon's direct (non-pooled) PostgreSQL URI for `DATABASE_URL`, which is used by Prisma migrations. Save each provider's connection URI privately. Create a dedicated database user with a strong unique password for MongoDB; restrict access where possible. Atlas may require allowing Render's outbound network, which can be broad on a free Render instance.
 2. **Create the API.** Import this public GitHub repository into Render as a Blueprint and deploy `render.yaml`. In the Render service environment, set:
    - `DATABASE_URL`: the Neon PostgreSQL connection URI.
