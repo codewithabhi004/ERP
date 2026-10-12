@@ -1,0 +1,181 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  admin
+  receptionist
+  teacher
+  classTeacher
+  principal
+  accountant
+  librarian
+  hr
+  student
+  parent
+}
+
+model User {
+  id                 Int                   @id @default(autoincrement())
+  username           String                @unique
+  email              String?               @unique
+  passwordHash       String
+  name               String
+  role               Role
+  active             Boolean               @default(true)
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  student            Student?
+  taughtSections     ClassSection[]        @relation("ClassTeacher")
+  attendanceMarked   Attendance[]          @relation("AttendanceMarker")
+  gradesEntered      Grade[]               @relation("GradeMarker")
+  feePaymentsTaken   FeePayment[]          @relation("FeeCollector")
+  parentChildren     ParentStudent[]       @relation("ParentUser")
+  admissionsHandled  AdmissionInquiry[]    @relation("AdmissionsHandler")
+  visitorsLogged     VisitorLog[]          @relation("VisitorLogger")
+}
+
+model ClassSection {
+  id            Int       @id @default(autoincrement())
+  grade         String
+  section       String
+  classTeacherId Int?
+  classTeacher  User?     @relation("ClassTeacher", fields: [classTeacherId], references: [id], onDelete: SetNull)
+  students      Student[]
+  attendance    Attendance[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([grade, section])
+}
+
+model Student {
+  id            Int            @id @default(autoincrement())
+  studentId     String         @unique
+  userId        Int?           @unique
+  user          User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  classSectionId Int?
+  classSection  ClassSection?  @relation(fields: [classSectionId], references: [id], onDelete: SetNull)
+  rollNumber    Int?
+  dateOfBirth   DateTime?
+  gender        String?
+  parentName    String?
+  parentPhone   String?
+  address       String?
+  admissionDate DateTime       @default(now())
+  status        String         @default("active")
+  attendance    Attendance[]
+  invoices      FeeInvoice[]
+  grades        Grade[]
+  parents       ParentStudent[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([classSectionId, status])
+}
+
+model ParentStudent {
+  parentId  Int
+  studentId Int
+  parent    User    @relation("ParentUser", fields: [parentId], references: [id], onDelete: Cascade)
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([parentId, studentId])
+}
+
+model Attendance {
+  id              Int          @id @default(autoincrement())
+  studentId       Int
+  student         Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  classSectionId  Int
+  classSection    ClassSection @relation(fields: [classSectionId], references: [id], onDelete: Cascade)
+  date            DateTime     @db.Date
+  status          String
+  markedById      Int
+  markedBy        User         @relation("AttendanceMarker", fields: [markedById], references: [id], onDelete: Restrict)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@unique([studentId, date])
+  @@index([classSectionId, date])
+}
+
+model FeeInvoice {
+  id          Int          @id @default(autoincrement())
+  invoiceNumber String     @unique
+  studentId   Int
+  student     Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  description String
+  amount      Decimal      @db.Decimal(10, 2)
+  paidAmount  Decimal      @default(0) @db.Decimal(10, 2)
+  currency    String       @default("INR")
+  dueDate     DateTime     @db.Date
+  status      String       @default("pending")
+  payments    FeePayment[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([studentId, status])
+}
+
+model FeePayment {
+  id             Int        @id @default(autoincrement())
+  receiptNumber  String     @unique
+  invoiceId      Int
+  invoice        FeeInvoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  amount         Decimal    @db.Decimal(10, 2)
+  method         String
+  collectedById  Int
+  collectedBy    User       @relation("FeeCollector", fields: [collectedById], references: [id], onDelete: Restrict)
+  paidAt         DateTime   @default(now())
+  createdAt      DateTime   @default(now())
+}
+
+model Grade {
+  id          Int      @id @default(autoincrement())
+  studentId   Int
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subject     String
+  term        String
+  score       Decimal  @db.Decimal(5, 2)
+  maxScore    Decimal  @default(100) @db.Decimal(5, 2)
+  teacherId   Int
+  teacher     User     @relation("GradeMarker", fields: [teacherId], references: [id], onDelete: Restrict)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([studentId, subject, term])
+}
+
+model AdmissionInquiry {
+  id           Int      @id @default(autoincrement())
+  applicantName String
+  parentName   String
+  phone        String
+  email        String?
+  grade        String
+  message      String?
+  status       String   @default("new")
+  handledById  Int?
+  handledBy    User?    @relation("AdmissionsHandler", fields: [handledById], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model VisitorLog {
+  id          Int      @id @default(autoincrement())
+  visitorName String
+  phone       String?
+  purpose     String
+  host        String?
+  checkedInAt DateTime @default(now())
+  checkedOutAt DateTime?
+  loggedById  Int
+  loggedBy    User     @relation("VisitorLogger", fields: [loggedById], references: [id], onDelete: Restrict)
+}
