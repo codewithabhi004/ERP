@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BrowserRouter, Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom'
+import { HashRouter, Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom'
 import Landing from './components/Landing'
 import LoginPage from './components/LoginPage'
 import SchoolPortal from './components/SchoolPortal'
@@ -58,8 +58,8 @@ function Application() {
 
 export default function App() {
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '')}>
+    <HashRouter>
       <Application />
-    </BrowserRouter>
+    </HashRouter>
   )
 }
