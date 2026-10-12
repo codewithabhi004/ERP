@@ -149,7 +149,7 @@ The GitHub Pages preview runs against bundled, fictional records. It supports re
 
 Provider account plans and available free tiers can change. Never send database credentials in chat or paste them into a public GitHub file.
 
-For the public **read-only preview only**, no provider account or database password is needed: open [the live demo](https://codewithabhi004.github.io/ERP/), choose a role/account, and enter the shared demo password above. Continue with the following optional steps only if you want a separate persistent API/database:
+For the public **read-only preview only**, no provider account or database password is needed: open [the live demo](https://codewithabhi004.github.io/ERP/) and choose a role or username; the shared demo credentials are filled in automatically. Continue with the following optional steps only if you want a separate persistent API/database:
 
 1. **Create databases.** Create a PostgreSQL database/project in Neon and a MongoDB Atlas cluster. Use Neon's direct (non-pooled) PostgreSQL URI for `DATABASE_URL`, which is used by Prisma migrations. Save each provider's connection URI privately. Create a dedicated database user with a strong unique password for MongoDB; restrict access where possible. Atlas may require allowing Render's outbound network, which can be broad on a free Render instance.
 2. **Create the API.** Import this public GitHub repository into Render as a Blueprint and deploy `render.yaml`. In the Render service environment, set:

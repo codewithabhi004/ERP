@@ -1,4 +1,4 @@
-const demoAccounts = [
+export const demoAccounts = [
   { username: 'admin1', name: 'School Administrator', role: 'admin' },
   { username: 'reception1', name: 'Ravi Mehta', role: 'receptionist' },
   { username: 'teacher1', name: 'Anjali Sharma', role: 'teacher' },
@@ -168,10 +168,13 @@ export function isDemoEnabled() {
   return import.meta.env.VITE_PUBLIC_DEMO === 'true'
 }
 
+export function getDemoPassword() {
+  return import.meta.env.VITE_DEMO_PASSWORD || 'EvergreenDemo2026!'
+}
+
 export function signInToDemo({ username, password, role }) {
-  const expectedPassword = import.meta.env.VITE_DEMO_PASSWORD || 'EvergreenDemo2026!'
-  if (password !== expectedPassword) throw new Error('Demo password is incorrect. Use the public demo password shown on this page.')
-  const account = demoAccounts.find((item) => item.username === username && (!role || item.role === role))
+  if (password !== getDemoPassword()) throw new Error('Demo password is incorrect. Use the public demo password shown on this page.')
+  const account = demoAccounts.find((item) => item.username === username.trim() && (!role || item.role === role))
   if (!account) throw new Error('Choose a valid demo username and matching role.')
   return {
     token: `demo:${account.role}:${account.username}`,

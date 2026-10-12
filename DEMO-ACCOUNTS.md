@@ -6,6 +6,8 @@ These accounts are for the fictional Evergreen Public School preview only. The s
 
 **Password for every account:** `EvergreenDemo2026!`
 
+On the login page, choosing a role fills in its username and password. You can also choose a username directly; this is useful for selecting either student account.
+
 | Role | Username |
 |---|---|
 | Administrator | `admin1` |

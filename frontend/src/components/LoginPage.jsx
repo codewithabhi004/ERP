@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ArrowLeft, Eye, EyeOff, GraduationCap, LockKeyhole } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { isDemoEnabled, loginRequest } from '../lib/api'
+import { demoAccounts, getDemoPassword } from '../lib/demo'
 import Button from './ui/Button'
 
 const roles = [
@@ -24,6 +25,23 @@ export default function LoginPage({ onLogin }) {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const demoEnabled = isDemoEnabled()
+
+  function selectRole(value) {
+    setRole(value)
+    if (demoEnabled) {
+      const account = demoAccounts.find((item) => item.role === value)
+      setUsername(account?.username || '')
+      setPassword(value ? getDemoPassword() : '')
+    }
+  }
+
+  function selectDemoUsername(value) {
+    const account = demoAccounts.find((item) => item.username === value)
+    setUsername(value)
+    setRole(account?.role || '')
+    setPassword(value ? getDemoPassword() : '')
+  }
 
   async function submit(event) {
     event.preventDefault()
@@ -59,33 +77,40 @@ export default function LoginPage({ onLogin }) {
         <div className="login-card">
           <span className="eyebrow">WELCOME BACK</span>
           <h2>Sign in to your portal</h2>
-          <p className="muted-copy">{isDemoEnabled() ? 'Use one of the public read-only demo accounts below.' : 'Use the account provided by your school.'}</p>
-          {isDemoEnabled() && (
+          <p className="muted-copy">{demoEnabled ? 'Choose a role or username to fill in the public read-only demo credentials.' : 'Use the account provided by your school.'}</p>
+          {demoEnabled && (
             <div className="demo-credentials">
-              <strong>Public demo password: EvergreenDemo2026!</strong>
-              <span>admin1 · reception1 · teacher1 · classTeacher1</span>
-              <span>principal1 · accountant1 · librarian1 · hr1</span>
-              <span>student1 · student2 · parent1</span>
+              <strong>Public demo password: {getDemoPassword()}</strong>
+              <span>Choose a role below to fill in its demo account automatically.</span>
               <small>Sample data only. Demo changes are not saved.</small>
             </div>
           )}
           <form className="login-form" onSubmit={submit}>
             <label htmlFor="role">I am signing in as</label>
-            <select id="role" value={role} onChange={(event) => setRole(event.target.value)}>
+            <select id="role" value={role} onChange={(event) => selectRole(event.target.value)}>
               <option value="">Choose your role (optional)</option>
               {roles.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select>
 
             <label htmlFor="username">Username</label>
-            <input
-              id="username"
-              autoComplete="username"
-              autoCapitalize="none"
-              placeholder="e.g. teacher1"
-              required
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
-            />
+            {demoEnabled ? (
+              <select id="username" autoComplete="username" required value={username} onChange={(event) => selectDemoUsername(event.target.value)}>
+                <option value="">Choose a demo username</option>
+                {demoAccounts.map(({ username: accountUsername, name }) => (
+                  <option key={accountUsername} value={accountUsername}>{accountUsername} — {name}</option>
+                ))}
+              </select>
+            ) : (
+              <input
+                id="username"
+                autoComplete="username"
+                autoCapitalize="none"
+                placeholder="e.g. teacher1"
+                required
+                value={username}
+                onChange={(event) => setUsername(event.target.value)}
+              />
+            )}
 
             <div className="password-label">
               <label htmlFor="password">Password</label>
