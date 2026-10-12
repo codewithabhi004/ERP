@@ -510,6 +510,7 @@ export default function SchoolPortal({ auth, onLogout }) {
         </header>
 
         <div className="portal-content">
+          {auth.demo && <div className="demo-readonly-banner" role="status">Public read-only demo · Fictional records · Changes are not saved</div>}
           {loadError && <div className="inline-alert" role="alert"><span>{loadError}</span><button onClick={() => setLoadError('')} aria-label="Dismiss message"><X size={16} /></button></div>}
           {flash && <div className="inline-success" role="status"><Check size={16} /><span>{flash}</span><button onClick={() => setFlash('')} aria-label="Dismiss message"><X size={16} /></button></div>}
           {loading && !dashboard && <div className="loading-panel"><span className="loading-spinner" /> Getting your school day ready…</div>}

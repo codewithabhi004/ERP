@@ -134,7 +134,22 @@ The frontend is a static site and can be published at **`https://codewithabhi004
 
 Use this only for a public, synthetic-data demo. Free hosting may sleep, have resource limits, or change its free-tier terms; it is not an availability or backup guarantee for a live school ERP.
 
-The GitHub Pages site publishes the frontend only. Until the Render API and hosted databases are configured and seeded, public sign-in cannot authenticate; the demo usernames/password are not yet active against a live backend.
+The GitHub Pages preview runs against bundled, fictional records. It supports read-only sample logins without an API or database, so people can inspect the role dashboards immediately. **Preview changes are not saved.** For persistent shared data, deploy the separate API and databases below.
+
+### Which password goes where?
+
+| Screen / setting | What to enter |
+|---|---|
+| Public demo login (`admin1`, `teacher1`, etc.) | `EvergreenDemo2026!` for every demo username. Use only on the public preview; this is not an administrator's production password. |
+| Neon PostgreSQL setup | Create a new, unique database password in Neon. Put Neon's connection URI in Render's `DATABASE_URL`; never use the public demo password here. |
+| MongoDB Atlas setup | Create a different strong database-user password in Atlas. Put its URI in Render's `MONGODB_URI`; URL-encode special characters if needed. |
+| Render `JWT_SECRET` | Do not type the demo password. Let Render generate this secret. |
+| Production school administrator | Choose a separate unique password for `ADMIN_PASSWORD`, only in the secured server environment during admin creation. Never put it in GitHub source or the public accounts guide. |
+| GitHub account | Sign in using your own GitHub credentials. Do not enter demo or database passwords into GitHub Pages settings. |
+
+Provider account plans and available free tiers can change. Never send database credentials in chat or paste them into a public GitHub file.
+
+For the public **read-only preview only**, no provider account or database password is needed: open [the live demo](https://codewithabhi004.github.io/ERP/), choose a role/account, and enter the shared demo password above. Continue with the following optional steps only if you want a separate persistent API/database:
 
 1. **Create databases.** Create a PostgreSQL database/project in Neon and a MongoDB Atlas cluster. Use Neon's direct (non-pooled) PostgreSQL URI for `DATABASE_URL`, which is used by Prisma migrations. Save each provider's connection URI privately. Create a dedicated database user with a strong unique password for MongoDB; restrict access where possible. Atlas may require allowing Render's outbound network, which can be broad on a free Render instance.
 2. **Create the API.** Import this public GitHub repository into Render as a Blueprint and deploy `render.yaml`. In the Render service environment, set:
@@ -144,7 +159,7 @@ The GitHub Pages site publishes the frontend only. Until the Render API and host
    - `PUBLIC_DEMO_READ_ONLY`: `true` (the Blueprint defaults to this).
 
    Render generates `JWT_SECRET`. Do not publish any database URI or secret in GitHub, source code, or the demo accounts file. The API readiness endpoint is `https://<render-service>.onrender.com/api/health`.
-3. **Initialize synthetic records.** On your own computer, configure `backend\.env` with the same Neon and Atlas URIs, `SEED_DEMO_DATA=true`, and `DEMO_PASSWORD=EvergreenDemo2026!`. Then run from the repository root:
+3. **Initialize persistent synthetic records (optional).** The Pages preview already has bundled demo fixtures; skip this step if you only need to explore it. For a separate, persistent hosted API demo, configure `backend\.env` with your Neon and Atlas URIs, `SEED_DEMO_DATA=true`, and a newly chosen synthetic-demo seed password of at least 12 characters. Then run from the repository root:
 
    ```powershell
    Set-Location backend
@@ -155,8 +170,8 @@ The GitHub Pages site publishes the frontend only. Until the Render API and host
    ```
 
    Seeding writes fictional student/staff records and the shared demo login accounts into your hosted demo databases. Do not run this against real school data. Keep `.env` on your computer; `.env` files are ignored by Git.
-4. **Publish the frontend.** In GitHub, open **Settings → Pages** and choose **GitHub Actions** as the build/deployment source. The workflow defaults to the API hostname in `render.yaml`; if Render gives the service a different URL, add `VITE_API_URL` under **Settings → Secrets and variables → Actions → Variables** with the actual API URL ending in `/api`. Run the **Deploy GitHub Pages** workflow (or push to `main`). After it succeeds, open `https://codewithabhi004.github.io/ERP/` and use the synthetic logins in [DEMO-ACCOUNTS.md](./DEMO-ACCOUNTS.md).
-5. **Keep the demo read-only.** Leave `PUBLIC_DEMO_READ_ONLY=true` on Render. Authenticated write requests return HTTP 403; login and reading demo screens continue to work. Never set the public demo password on a school/production deployment.
+4. **Publish the static frontend.** In GitHub, open **Settings → Pages** and choose **GitHub Actions** as the build/deployment source (this repository is already configured). Pushes to `main` run the deploy workflow. The static demo does not call Render and needs no `VITE_API_URL`, hosted accounts, or database credentials. To connect a separate production client to an API, build that client with its own API URL and without `VITE_PUBLIC_DEMO=true`.
+5. **Keep demo and production separate.** The static Pages preview uses bundled synthetic records and rejects every write locally. On a persistent demo API, leave `PUBLIC_DEMO_READ_ONLY=true`; authenticated writes return HTTP 403. Never set the public demo password on a school/production deployment.
 
 ### Where to see and manage the data
 

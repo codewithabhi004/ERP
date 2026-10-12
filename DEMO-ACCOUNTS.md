@@ -2,9 +2,7 @@
 
 Public frontend preview: https://codewithabhi004.github.io/ERP/
 
-The website is live, but account sign-in is not active until the API and demo databases are provisioned and seeded using the steps in [README.md](./README.md).
-
-These accounts are for the fictional Evergreen Public School demo only. Every account uses the shared password below. The public demo API is configured as read-only; it contains synthetic records, not real student or school information.
+These accounts are for the fictional Evergreen Public School preview only. The static preview signs in using local synthetic fixtures; every account uses the shared password below. It does not connect to a database, and changes are not saved.
 
 **Password for every account:** `EvergreenDemo2026!`
 
@@ -22,4 +20,4 @@ These accounts are for the fictional Evergreen Public School demo only. Every ac
 | Student | `student2` |
 | Parent | `parent1` |
 
-Do not reuse these credentials or this public demo database for a real school. Public visitors can inspect synthetic records and the frontend source.
+Do not reuse these credentials for a real school. Public visitors can inspect the synthetic records and frontend source. For a persistent, hosted demo database/API, follow the service setup in [README.md](./README.md).

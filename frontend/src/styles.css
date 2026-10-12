@@ -606,6 +606,22 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
 
+.demo-credentials {
+  display: grid;
+  gap: 6px;
+  margin: 16px 0;
+  padding: 13px 15px;
+  border: 1px solid #cbded1;
+  border-radius: 12px;
+  background: #f0f7f1;
+  color: #284d3d;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.demo-credentials small { color: #597263; }
+.demo-readonly-banner { margin-bottom: 18px; padding: 11px 15px; border: 1px solid #ead7a4; border-radius: 12px; background: #fff8e7; color: #745414; font-size: 13px; }
+
 @media print {
   body * { visibility: hidden; }
   .student-id-card, .student-id-card * { visibility: visible; }

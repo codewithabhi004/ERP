@@ -32,7 +32,7 @@ jobs:
       - name: Build the frontend
         working-directory: frontend
         env:
-          VITE_API_URL: ${{ vars.VITE_API_URL || 'https://evergreen-school-erp-api.onrender.com/api' }}
+          VITE_PUBLIC_DEMO: 'true'
         run: |
           npm run build
       - name: Upload Pages artifact

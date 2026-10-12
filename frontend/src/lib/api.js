@@ -1,6 +1,12 @@
+import { demoRequest, isDemoEnabled, signInToDemo } from './demo'
+
+export { isDemoEnabled }
+
 const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000/api').replace(/\/$/, '')
 
 export async function apiRequest(path, token, options = {}) {
+  if (token?.startsWith('demo:')) return demoRequest(path, { ...options, token })
+
   const response = await fetch(`${API_URL}${path}`, {
     ...options,
     headers: {
@@ -15,6 +21,14 @@ export async function apiRequest(path, token, options = {}) {
     throw new Error(payload.message || 'The request could not be completed.')
   }
   return payload
+}
+
+export async function loginRequest(credentials) {
+  if (isDemoEnabled()) return signInToDemo(credentials)
+  return apiRequest('/auth/login', null, {
+    method: 'POST',
+    body: JSON.stringify(credentials)
+  })
 }
 
 export function indianRupees(amount) {

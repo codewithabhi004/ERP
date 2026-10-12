@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ArrowLeft, Eye, EyeOff, GraduationCap, LockKeyhole } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { apiRequest } from '../lib/api'
+import { isDemoEnabled, loginRequest } from '../lib/api'
 import Button from './ui/Button'
 
 const roles = [
@@ -30,10 +30,7 @@ export default function LoginPage({ onLogin }) {
     setError('')
     setBusy(true)
     try {
-      const data = await apiRequest('/auth/login', null, {
-        method: 'POST',
-        body: JSON.stringify({ username, password, ...(role ? { role } : {}) })
-      })
+      const data = await loginRequest({ username, password, ...(role ? { role } : {}) })
       onLogin(data)
     } catch (requestError) {
       setError(requestError.message)
@@ -62,7 +59,16 @@ export default function LoginPage({ onLogin }) {
         <div className="login-card">
           <span className="eyebrow">WELCOME BACK</span>
           <h2>Sign in to your portal</h2>
-          <p className="muted-copy">Use the account provided by your school.</p>
+          <p className="muted-copy">{isDemoEnabled() ? 'Use one of the public read-only demo accounts below.' : 'Use the account provided by your school.'}</p>
+          {isDemoEnabled() && (
+            <div className="demo-credentials">
+              <strong>Public demo password: EvergreenDemo2026!</strong>
+              <span>admin1 · reception1 · teacher1 · classTeacher1</span>
+              <span>principal1 · accountant1 · librarian1 · hr1</span>
+              <span>student1 · student2 · parent1</span>
+              <small>Sample data only. Demo changes are not saved.</small>
+            </div>
+          )}
           <form className="login-form" onSubmit={submit}>
             <label htmlFor="role">I am signing in as</label>
             <select id="role" value={role} onChange={(event) => setRole(event.target.value)}>
